@@ -1,0 +1,30 @@
+- hosts: anurag
+  name: "Installing Docker"
+  tasks:
+  - package:
+      name: "{{ items }}"
+    vars:
+      items:
+      - docker
+      state: present
+    when:  ansible_os_family == "Debian"
+  - package:
+      name: "{{ items }}"
+    vars:
+      items:
+      - docker
+      state: present
+    when:  ansible_os_family == "RedHat"
+  - service:
+       name: docker
+       state: started
+       enabled: yes
+    when:  ansible_os_family == "Debian"
+  - service:
+       name: docker
+       state: started
+       enabled: yes
+    when:  ansible_os_family == "Debian"
+      
+
+   

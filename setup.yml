@@ -1,0 +1,31 @@
+- hosts: httpd
+  name: "web server conf"
+  tasks:
+   - package:		
+       name: nginx
+       state: present
+   - file:
+       path: /var/www/anurag
+       owner: www-data
+       mode: 0755
+       state: directory
+   - template:
+       src: /root/templates/web.conf
+       dest: /etc/nginx/conf.d/web.conf
+       owner: www-data
+       mode: 0644
+   - copy:
+       src: /var/www/html/index.html
+       dest: /var/www/anurag
+       owner: www-data
+       mode: 0644
+   - service:
+       name: nginx
+       state: started 
+       enabled: yes
+   - firewalld:
+       service: nginx
+       permanent: true
+       state: enabled
+       immediate: true
+ 

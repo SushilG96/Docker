@@ -1,0 +1,50 @@
+- hosts: httpd
+  name: "web server conf"
+  tasks:
+   - package: 
+       name: httpd
+       state: present 
+     when:  ansible_os_family == "RedHat"
+   - package:
+       name: nginx
+       state: present
+     when:  ansible_os_family == "Debian"
+   - file: 
+       path: /var/www/anurag
+       owner: www-data
+       mode: 0755
+       state: directory
+     when:  ansible_os_family == "RedHat"
+
+   - template:
+rth: /var/www/anurag
+       owner: www-data
+       mode: 0755
+       state: directory
+     when:  ansible_os_family == "RedHat"
+  - template
+       src: /root/templates/web.conf
+       dest: /etc/nginx/conf.d/web.conf
+       owner: www-data
+       mode: 0644
+ when:  ansible_os_family == "RedHat"
+
+   - copy:
+       src: /var/www/html/index.html
+       dest: /var/www/anurag
+       owner: www-data
+       mode: 0644
+ when:  ansible_os_family == "RedHat"
+
+   - service:
+       name: httpd
+       state: started 
+       enabled: yes
+ when:  ansible_os_family == "RedHat"
+
+   - firewalld:
+       service: httpd
+       permanent: true
+       state: enabled
+       immediate: true
+ when:  ansible_os_family == "RedHat" 

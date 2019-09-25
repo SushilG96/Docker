@@ -1,0 +1,39 @@
+- hosts: httpd
+  name: "web server conf"
+  tasks:
+   - package:
+       name: nginx
+       state: present
+     when:  ansible_os_family == "Debian"
+   - file:
+       path: /var/nginx/anurag
+       owner: www-data
+       mode: 0755
+       state: directory
+     when:  ansible_os_family == "Debian"
+   - template:
+       src: /root/templates/web.conf.j2
+       dest: /etc/nginx/conf.d/web.conf.j2
+       owner: www-data
+       mode: 0644
+     when:  ansible_os_family == "Debian"
+   - copy:
+       src: /root/index.html
+       dest: /var/nginx/anurag
+       owner: www-data
+       mode: 0644
+     when:  ansible_os_family == "Debian"
+   - service:
+       name: nginx
+       state: started
+       enabled: yes
+     when:  ansible_os_family == "Debian"
+   - firewalld:
+       service: nginx
+       permanent: true
+       state: enabled
+       immediate: true
+     when:  ansible_os_family == "Debian"
+
+
+

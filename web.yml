@@ -1,0 +1,72 @@
+- hosts: httpd
+  name: "web server conf"
+  tasks:
+   - package:
+       name: httpd
+       state: present
+     when:  ansible_os_family == "RedHat"
+   - package:
+       name: nginx
+       state: present
+     when:  ansible_os_family == "Debian"
+   - file:
+       path: /var/www/anurag
+       owner: apache
+       mode: 0755
+       state: directory
+     when:  ansible_os_family == "RedHat"
+   - file:
+       path: /var/nginx/anurag
+       owner: www-data
+       mode: 0755
+       state: directory
+     when:  ansible_os_family == "Debian"
+   - template:
+       src: /root/templates/web.conf
+       dest: /etc/nginx/conf.d/web.conf
+       owner: www-data
+       mode: 0644
+     when:  ansible_os_family == "Debian"
+   - template:
+       src: /root/templates/web.conf
+       dest: /etc/www/conf.d/web.conf
+       owner: apache
+       mode: 0644
+     when:  ansible_os_family == "RedHat"
+   - copy:
+       src: /var/www/html/index.html
+       dest: /var/www/anurag
+       owner: apache
+       mode: 0644
+     when:  ansible_os_family == "RedHat"
+   - copy:
+       src: /var/nginx/html/index.html
+       dest: /var/nginx/anurag
+       owner: www-data
+       mode: 0644
+     when:  ansible_os_family == "Debian"
+   - service:
+       name: httpd
+       state: started
+       enabled: yes
+     when:  ansible_os_family == "RedHat"
+   - service:
+       name: nginx
+       state: started
+       enabled: yes
+     when:  ansible_os_family == "Debian"
+   - firewalld:
+       service: http
+       permanent: true
+       state: enabled
+       immediate: true
+     when:  ansible_os_family == "RedHat"
+   - firewalld:
+       service: nginx
+       permanent: true
+       state: enabled
+       immediate: true
+     when:  ansible_os_family == "Debian"
+
+
+
